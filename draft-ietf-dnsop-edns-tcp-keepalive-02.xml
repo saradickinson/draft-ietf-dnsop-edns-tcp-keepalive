@@ -313,11 +313,24 @@
 	  closed, or to fall back to UDP.</t>
 
    <t>Based on TCP session resources servers may signal a
-       TIMEOUT value of 0 to request clients to close
-       connections as soon as possible. This is useful when, server resources 
-       become very low, or a 
-       denial-of-service attack is detected and further maximises the shifting of
-       TIME_WAIT state to well-behaved clients. </t>
+	  TIMEOUT value of 0 to request clients to close
+	  connections as soon as possible. This is useful when, server resources 
+	  become very low, or a 
+	  denial-of-service attack is detected and further maximises the shifting of
+	  TIME_WAIT state to well-behaved clients. </t>
+
+	<t>However it should be noted that RCF6891 states:
+	   <list><t>Lack of presence of an OPT record in a request MUST be taken as an
+	      indication that the requestor does not implement any part of this
+	      specification and that the responder MUST NOT include an OPT record
+	      in its response.</t></list>
+	   Since servers must be faithful to this specification even on a persistent TCP connection it 
+	   means that (following the initial exchange of timeouts) a server may not be presented with
+	   the opportunity to signal a change in the idle timeout associated with a connection if the
+	   client does not send any further requests containing EDNS0 OPT RRs. This limitation makes 
+	   persistent connection handling via an initial idle timeout signal more attractive than a 
+	   mechanism that establishes default persistence and then uses a connection close mechanism (in 
+	   a similar manner to HTTP 1.1).</t>
 
 	<t>DNS clients and servers MAY close a TCP session at any
 	  time in order to manage local resource constraints.  The

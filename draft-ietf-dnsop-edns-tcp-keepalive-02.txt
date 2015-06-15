@@ -84,16 +84,16 @@ Table of Contents
        3.3.1.  Receiving Queries . . . . . . . . . . . . . . . . . .   6
        3.3.2.  Sending Responses . . . . . . . . . . . . . . . . . .   6
      3.4.  TCP Session Management  . . . . . . . . . . . . . . . . .   7
-     3.5.  Non-Clean Paths . . . . . . . . . . . . . . . . . . . . .   7
-     3.6.  Anycast Considerations  . . . . . . . . . . . . . . . . .   7
+     3.5.  Non-Clean Paths . . . . . . . . . . . . . . . . . . . . .   8
+     3.6.  Anycast Considerations  . . . . . . . . . . . . . . . . .   8
    4.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
    5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
-   6.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   8
-   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   8
+   6.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   9
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
      7.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
-     7.2.  Informative References  . . . . . . . . . . . . . . . . .   9
-   Appendix A.  Editors' Notes . . . . . . . . . . . . . . . . . . .   9
-     A.1.  Venue . . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     7.2.  Informative References  . . . . . . . . . . . . . . . . .  10
+   Appendix A.  Editors' Notes . . . . . . . . . . . . . . . . . . .  10
+     A.1.  Venue . . . . . . . . . . . . . . . . . . . . . . . . . .  10
      A.2.  Abridged Change History . . . . . . . . . . . . . . . . .  10
        A.2.1.  draft-ietf-dnsop-edns-tcp-keepalive-01  . . . . . . .  10
        A.2.2.  draft-ietf-dnsop-edns-tcp-keepalive-00  . . . . . . .  10
@@ -371,6 +371,32 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
    service attack is detected and further maximises the shifting of
    TIME_WAIT state to well-behaved clients.
 
+   However it should be noted that RCF6891 states:
+
+      Lack of presence of an OPT record in a request MUST be taken as an
+      indication that the requestor does not implement any part of this
+      specification and that the responder MUST NOT include an OPT
+      record in its response.
+
+   Since servers must be faithful to this specification even on a
+   persistent TCP connection it means that (following the initial
+   exchange of timeouts) a server may not be presented with the
+   opportunity to signal a change in the idle timeout associated with a
+   connection if the client does not send any further requests
+   containing EDNS0 OPT RRs.  This limitation makes persistent
+   connection handling via an initial idle timeout signal more
+   attractive than a mechanism that establishes default persistence and
+
+
+
+Wouters & Abley          Expires April 30, 2015                 [Page 7]
+
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
+
+
+   then uses a connection close mechanism (in a similar manner to HTTP
+   1.1).
+
    DNS clients and servers MAY close a TCP session at any time in order
    to manage local resource constraints.  The algorithm by which clients
    and servers rank active TCP sessions in order to determine which to
@@ -385,14 +411,6 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
    be employed to avoid persistent interference due to non-clean paths.
 
 3.6.  Anycast Considerations
-
-
-
-
-Wouters & Abley          Expires April 30, 2015                 [Page 7]
-
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
-
 
    DNS servers of various types are commonly deployed using anycast
    [RFC4786].
@@ -424,6 +442,14 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
 5.  IANA Considerations
 
+
+
+
+Wouters & Abley          Expires April 30, 2015                 [Page 8]
+
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
+
+
    The IANA is directed to assign an EDNS0 option code for the edns-tcp-
    keepalive option from the DNS EDNS0 Option Codes (OPT) registry as
    follows:
@@ -440,15 +466,6 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
    TATUYA and Mark Andrews.
 
 7.  References
-
-
-
-
-
-Wouters & Abley          Expires April 30, 2015                 [Page 8]
-
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
-
 
 7.1.  Normative References
 
@@ -480,6 +497,15 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
               for DNS (EDNS(0))", STD 75, RFC 6891, April 2013.
 
    [STARTTLS]
+
+
+
+
+Wouters & Abley          Expires April 30, 2015                 [Page 9]
+
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
+
+
               Hu, Z., Zhu, L., Heidemann, J., Mankin, A., Wessels, D.,
               and P. Hoffman, "TLS for DNS: Initiation and Performance
               Considerations", draft-hzhwm-dprive-start-tls-for-dns-02
@@ -496,15 +522,6 @@ A.1.  Venue
 
    An appropriate venue for discussion of this document is
    dnsop@ietf.org.
-
-
-
-
-
-Wouters & Abley          Expires April 30, 2015                 [Page 9]
-
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
-
 
 A.2.  Abridged Change History
 
@@ -533,6 +550,18 @@ Authors' Addresses
    Email: pwouters@redhat.com
 
 
+
+
+
+
+
+
+
+Wouters & Abley          Expires April 30, 2015                [Page 10]
+
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
+
+
    Joe Abley
    Dyn, Inc.
    470 Moore Street
@@ -557,4 +586,31 @@ Authors' Addresses
 
 
 
-Wouters & Abley          Expires April 30, 2015                [Page 10]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Wouters & Abley          Expires April 30, 2015                [Page 11]

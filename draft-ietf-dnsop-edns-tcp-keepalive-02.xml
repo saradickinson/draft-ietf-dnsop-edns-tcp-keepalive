@@ -61,9 +61,8 @@
 	state on a busy server, but can cause truncation and retries
 	over TCP. Additionally, UDP can be exploited for reflection
 	attacks. Using TCP would reduce retransmits and amplification.
-	However, both clients and servers are currently limited in their use of the
-	TCP transport as RFC 5966 suggests that "that the default 
-	application-level idle period should be of the order of seconds".</t>
+	However, clients commonly use TCP only for fallback and servers
+	typically use idle timeouts on the order of seconds.</t>
 
       <t>This document defines an EDNS0 option ("edns-tcp-keepalive")
 	that allows DNS servers to signal a variable idle timeout.
@@ -205,7 +204,8 @@
             <t hangText="OPTION-CODE: ">the EDNS0 option code
               assigned to edns-tcp-keepalive, [TBD]</t>
 
-            <t hangText="OPTION-LENGTH: ">the value 2;</t>
+            <t hangText="OPTION-LENGTH: ">the value 0 if the TIMEOUT is omitted, the value 2 if it 
+                is present;</t>
 
             <t hangText="TIMEOUT: ">an idle timeout value for the TCP connection, specified in
               milliseconds, encoded in network byte order.</t>
@@ -215,30 +215,21 @@
 
       <section title="Use by DNS Clients">
         <section title="Sending Queries">
-          <t>DNS clients MAY include the edns-tcp-keepalive option
-            in queries sent using UDP transport to signal their
-            general ability to support TCP keepalive.</t>
+          <t>DNS clients MUST NOT include the edns-tcp-keepalive option
+            in queries sent using UDP transport.</t>
 
           <t>DNS clients MAY include the edns-tcp-keepalive option
             in the first query sent to a server using TCP transport
             to signal their desire to keep the connection open when idle.</t>
 
-          <t>Clients MAY specify a TIMEOUT value that is representative
-            of what they intend to use on the connection.</t>
-
-          <t>QUESTION: Is the client timeout really useful, or should we instead have clients set 
-              all the bits to 1 and require servers not to use that value to identify cases where 
-              the ENDS0 option is simply being reflected back.</t>
+          <t>Clients MUST specify a OPTION-LENGTH of 0 and omit the TIMEOUT value.</t>
 
 	</section>
 
         <section title="Receiving Responses">
 	  <t>A DNS client that receives a response using UDP transport
-	    that includes the edns-tcp-keepalive option MAY record
-	    the presence of the option and the associated TIMEOUT
-	    value, and use that information as part of its server
-	    selection algorithm in the case where multiple candidate
-	    servers are available to service a particular query.</t>
+	    that includes the edns-tcp-keepalive option MUST ignore the
+	    option.</t>
 
 	  <t>A DNS client that receives a response using TCP transport
 	    that includes the edns-tcp-keepalive option MAY keep the
@@ -261,24 +252,15 @@
       <section title="Use by DNS Servers">
         <section title="Receiving Queries">
 	  <t>A DNS server that receives a query using UDP transport
-	    that includes the edns-tcp-keepalive option MAY record
-	    the presence of the option for statistical purposes, but SHOULD NOT otherwise
-	    modify its usual behaviour in sending a response.</t>
+	    that includes the edns-tcp-keepalive option MUST ignore the option.</t>
 
           <t>A DNS server that receives a query using TCP transport that includes
            the edns-tcp-keepalive option MAY modify the local idle timeout
-           associated with that TCP session if resources permit, using the TIMEOUT
-           value supplied by the client as a guide.</t>
+           associated with that TCP session if resources permit.</t>
 
 	</section>
 
         <section title="Sending Responses">
-	  <t>DNS servers MAY include the edns-tcp-keepalive option
-	    in responses sent using UDP transport to signal their general
-	    ability to use keepalive timeouts.  The TIMEOUT value
-	    should be indicative of what a client might expect if it was
-	    to open a TCP session with the server and receive a response
-	    with the edns-tcp-keepalive option present.</t>
 
 	  <t>DNS servers MAY include the edns-tcp-keepalive option
 	    in responses sent using TCP transport to signal their
@@ -300,8 +282,13 @@
 	  configuration options or by interrogation of process
 	  limits imposed by the operating system. In particular, servers
 	  that signal keepalive capability should engage in TCP connection 
-	  management by recycling existing connections when appropriate 
+	  management by recycling existing connections when appropriate, closing connections gracefully
 	  and managing request queues to enable fair use.(ref 5966-bis here?)</t>
+	  
+	  <t>QUESTION: Should this be worded more strongly to advise that for servers that support 
+	      keepalive TCP should be considered on
+	      an equal footing to UDP and server implementors and operators should make adequate 
+	      provision for this.</t>
 
 	<t>In the event that there is greater demand for TCP sessions
 	  than can be accommodated, servers may reduce
@@ -435,33 +422,6 @@
       <format type='TXT' 
             target='http://www.ietf.org/internet-drafts/draft-ietf-dnsop-edns-chain-query-01.txt' /> 
    </reference> 
-   <reference anchor='STARTTLS'> 
-      <front> 
-      <title>TLS for DNS: Initiation and Performance Considerations</title>
-      <author initials='Z' surname='Hu' fullname='Z. Hu'> 
-      <organization>USC/Information Sciences Institute</organization>
-      </author> 
-      <author initials='L' surname='Zhu' fullname='L. Zhu'> 
-      <organization>USC/Information Sciences Institute</organization>
-      </author>
-      <author initials='J' surname='Heidemann' fullname='J. Hiedemann'> 
-       <organization>USC/Information Sciences Institute</organization>
-      </author>
-      <author initials='A' surname='Mankin' fullname='A. Mankin'> 
-        <organization>Verisign Labs</organization>
-      </author>
-      <author initials='D' surname='Wessels' fullname='D. Wessels'> 
-          <organization>Verisign Labs</organization>
-      </author>
-      <author initials='P' surname='Hoffman' fullname='P. Hoffman'> 
-         <organization>VPN Consortium</organization>
-      </author>
-      <date month='February' day='12' year='2015' /> 
-      </front> 
-      <seriesInfo name='Internet-Draft' value='draft-hzhwm-dprive-start-tls-for-dns-02' /> 
-      <format type='TXT' 
-            target='https://tools.ietf.org/html/draft-ietf-dprive-start-tls-for-dns-00' /> 
-   </reference> 
 
     </references>
 
@@ -489,6 +449,33 @@
         <seriesInfo name="ISC-TN" value="2012-1-Draft1"/>
         <format type="TXT" target="http://ss.vix.su/~vixie/isc-tn-2012-1.txt"/>
       </reference>
+      <reference anchor='STARTTLS'> 
+         <front> 
+         <title>TLS for DNS: Initiation and Performance Considerations</title>
+         <author initials='Z' surname='Hu' fullname='Z. Hu'> 
+         <organization>USC/Information Sciences Institute</organization>
+         </author> 
+         <author initials='L' surname='Zhu' fullname='L. Zhu'> 
+         <organization>USC/Information Sciences Institute</organization>
+         </author>
+         <author initials='J' surname='Heidemann' fullname='J. Hiedemann'> 
+          <organization>USC/Information Sciences Institute</organization>
+         </author>
+         <author initials='A' surname='Mankin' fullname='A. Mankin'> 
+           <organization>Verisign Labs</organization>
+         </author>
+         <author initials='D' surname='Wessels' fullname='D. Wessels'> 
+             <organization>Verisign Labs</organization>
+         </author>
+         <author initials='P' surname='Hoffman' fullname='P. Hoffman'> 
+            <organization>VPN Consortium</organization>
+         </author>
+         <date month='February' day='12' year='2015' /> 
+         </front> 
+         <seriesInfo name='Internet-Draft' value='draft-hzhwm-dprive-start-tls-for-dns-02' /> 
+         <format type='TXT' 
+               target='https://tools.ietf.org/html/draft-ietf-dprive-start-tls-for-dns-00' /> 
+      </reference>
     </references>
 
     <section title="Editors' Notes">
@@ -496,8 +483,24 @@
         <t>An appropriate venue for discussion of this document is
           dnsop@ietf.org.</t>
       </section>
-
       <section title="Abridged Change History">
+          <section title="draft-ietf-dnsop-edns-tcp-keepalive-02">
+            <t>Changed timeout value to idle timeout and re-phrased document around this.</t>
+            <t>Changed units of timeout to ms.</t>
+            <t>Change specification to remove use of the option over UDP. This is potentially 
+                confusing, could cause 
+                issues with ALG's and adds only limited value.</t>
+            <t>Changed semantics so the client no longer sends a timeout. The client timeout is 
+                of limited value as servers should be managing timeouts based on their view of
+                their resources, not on client requests as this is open to abuse. Additionally
+                this identifies cases were the option is simply being reflected back.</t>
+            <t>Changed semantics for the meaning of a server sending a timeout of 0. The maximum timeout 
+                value is already large and a distinct 'connection close'-like signal is useful.</t>
+            <t>Added more detail on server side requirements when supporting keepalive in terms
+                of resource and connection management.</t>
+            <t>Added discussion of EDNS0 per-message limitation and implications of this.</t>
+            <t>Added reference to STARTTLS draft</t>
+          </section>
         <section title="draft-ietf-dnsop-edns-tcp-keepalive-01">
           <t>Version bump with no changes</t>
         </section>

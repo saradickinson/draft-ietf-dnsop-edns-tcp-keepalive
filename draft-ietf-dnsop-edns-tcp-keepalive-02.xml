@@ -19,7 +19,7 @@
 ]>
 
 <rfc category="std" ipr="trust200902"
-  docName="draft-ietf-dnsop-edns-tcp-keepalive-01">
+  docName="draft-ietf-dnsop-edns-tcp-keepalive-02">
 
 <?rfc toc="yes" ?>
 <?rfc symrefs="yes" ?>
@@ -207,8 +207,8 @@
             <t hangText="OPTION-LENGTH: ">the value 0 if the TIMEOUT is omitted, the value 2 if it 
                 is present;</t>
 
-            <t hangText="TIMEOUT: ">an idle timeout value for the TCP connection, specified in
-              milliseconds, encoded in network byte order.</t>
+            <t hangText="TIMEOUT: ">an idle timeout value for the TCP connection, specified in units 
+                of 100 milliseconds, encoded in network byte order.</t>
           </list>
         </t>
       </section>
@@ -267,7 +267,8 @@
 	    expected idle timeout on a connection. Servers MUST specify the TIMEOUT value
 	    that is currently associated with the TCP session. It is
 	    reasonable for this value to change according to local
-	    resource constraints. The DNS server SHOULD send a
+	    resource constraints or in consideration of intermediary behaviour (for example TCP
+	    middleboxes or NATs). The DNS server SHOULD send a
 	    edns-tcp-keepalive option with a timeout of 0 if it deems its local resources
 	    are too low to service more TCP keepalive sessions.</t>
 	</section>
@@ -486,16 +487,17 @@
       <section title="Abridged Change History">
           <section title="draft-ietf-dnsop-edns-tcp-keepalive-02">
             <t>Changed timeout value to idle timeout and re-phrased document around this.</t>
-            <t>Changed units of timeout to ms.</t>
+            <t>Changed units of timeout to 100ms to allow values less than 1 second.</t>
             <t>Change specification to remove use of the option over UDP. This is potentially 
                 confusing, could cause 
                 issues with ALG's and adds only limited value.</t>
             <t>Changed semantics so the client no longer sends a timeout. The client timeout is 
-                of limited value as servers should be managing timeouts based on their view of
+                of limited value as servers should be managing connections based on their view of
                 their resources, not on client requests as this is open to abuse. Additionally
                 this identifies cases were the option is simply being reflected back.</t>
-            <t>Changed semantics for the meaning of a server sending a timeout of 0. The maximum timeout 
-                value is already large and a distinct 'connection close'-like signal is useful.</t>
+            <t>Changed semantics for the meaning of a server sending a timeout of 0. The maximum 
+                timeout value of 6553.5s (~1.8h) is already large and a distinct 
+                'connection close'-like signal is potentially more useful.</t>
             <t>Added more detail on server side requirements when supporting keepalive in terms
                 of resource and connection management.</t>
             <t>Added discussion of EDNS0 per-message limitation and implications of this.</t>

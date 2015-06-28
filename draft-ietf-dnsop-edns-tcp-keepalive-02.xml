@@ -16,6 +16,8 @@
     'http://xml.resource.org/public/rfc/bibxml/reference.RFC.6824.xml'>
   <!ENTITY rfc6891 PUBLIC ''
     'http://xml.resource.org/public/rfc/bibxml/reference.RFC.6891.xml'>
+  <!ENTITY rfc7320 PUBLIC ''
+    'http://xml.resource.org/public/rfc/bibxml/reference.RFC.7320.xml'>
 ]>
 
 <rfc category="std" ipr="trust200902"
@@ -51,6 +53,36 @@
       </address>
     </author>
 
+    <author fullname="Sara Dickinson" initials="S." surname="Dickinson">
+      <organization abbrev="Sinodun">Sinodun Internet Technologies</organization>
+      <address>
+          <postal>
+              <street>Magdalen Centre</street>
+              <street>Oxford Science Park</street>
+              <city>Oxford</city>
+              <region/>
+              <code>OX4 4GA</code>
+              <country>UK</country>
+          </postal>
+          <email>sara@sinodun.com</email>
+          <uri>http://sinodun.com</uri>
+      </address>
+    </author>
+
+    <author fullname="Ray Bellis" initials="R." surname="Bellis">
+        <organization abbrev="ISC">Internet Systems Consortium, Inc</organization>
+        <address>
+        <postal>
+            <street>950 Charter Street</street>
+            <city>Redwood City</city>
+            <code>CA  94063</code>
+            <country>USA</country>
+        </postal>
+        <phone>+1 650 423 1200</phone>
+        <email>ray@isc.org</email>
+        <uri>http://www.isc.org</uri>
+    </address>
+    </author>
     <date month="October" day="27" year="2014" />
     <area>ops</area>
     <workgroup>dnsop</workgroup>
@@ -89,7 +121,7 @@
         truncated response typically only uses the TCP session for a
         single (request, response) pair, continuing with UDP transport
         for subsequent queries. Clients wishing to use
-        other TCP based technologies, for example TLS, would also benefit
+        other stream-based transport protocols for DNS would also benefit
         from the set-up amortisation afforded by long lived connections.</t>
 
       <t>UDP transport is stateless, and hence presents a much
@@ -161,7 +193,7 @@
           when combined with other edns extensions, such as
            <xref target="CHAIN-QUERY"/> and <xref target="STARTTLS"/>. For example, 
            the combination of
-          these such EDNS extensions make it possible for hosts on
+          these EDNS extensions make it possible for hosts on
           high-latency mobile networks to natively perform DNSSEC validation and encrypt queries.
           </t>
     </section>
@@ -235,7 +267,7 @@
 	    that includes the edns-tcp-keepalive option MAY keep the
 	    existing TCP session open when it is idle. It SHOULD honour the
 	    timeout and initiate close
-	    of the connection before the timeout expires. [Add reference to 5966 idle discussion?]</t>
+	    of the connection before the timeout expires.</t>
 
 	  <t>A DNS client that receives a response that includes the edns-tcp-keepalive option
 	      with a TIMEOUT value of 0 should send no more queries on that connection and initiate
@@ -243,8 +275,8 @@
 
       <t> A DNS client that sent a query containing the edns-keepalive-option 
           but receives a response that does not contain the edns-keepalive-option should assume the
-          server does not support keepalive and behave following the guidance in 5966-bis (TODO: Add 
-          reference). This holds true even if a previous edns-keepalive-option exchange occurred on 
+          server does not support keepalive and behave following the guidance in <xref target="DRAFT-5966bis"/>. 
+          This holds true even if a previous edns-keepalive-option exchange occurred on 
           the existing TCP connection.</t>
 	</section>
       </section>
@@ -281,15 +313,10 @@
 	  active sessions that can be maintained on individual
 	  clients and servers should be established, either as
 	  configuration options or by interrogation of process
-	  limits imposed by the operating system. In particular, servers
-	  that signal keepalive capability should engage in TCP connection 
+	  limits imposed by the operating system. Servers
+	  that implement keepalive should also engage in TCP connection 
 	  management by recycling existing connections when appropriate, closing connections gracefully
-	  and managing request queues to enable fair use.(ref 5966-bis here?)</t>
-	  
-	  <t>QUESTION: Should this be worded more strongly to advise that for servers that support 
-	      keepalive TCP should be considered on
-	      an equal footing to UDP and server implementors and operators should make adequate 
-	      provision for this.</t>
+	  and managing request queues to enable fair use.</t>
 
 	<t>In the event that there is greater demand for TCP sessions
 	  than can be accommodated, servers may reduce
@@ -302,8 +329,8 @@
 
    <t>Based on TCP session resources servers may signal a
 	  TIMEOUT value of 0 to request clients to close
-	  connections as soon as possible. This is useful when, server resources 
-	  become very low, or a 
+	  connections as soon as possible. This is useful when server resources 
+	  become very low or a 
 	  denial-of-service attack is detected and further maximises the shifting of
 	  TIME_WAIT state to well-behaved clients. </t>
 
@@ -317,8 +344,8 @@
 	   the opportunity to signal a change in the idle timeout associated with a connection if the
 	   client does not send any further requests containing EDNS0 OPT RRs. This limitation makes 
 	   persistent connection handling via an initial idle timeout signal more attractive than a 
-	   mechanism that establishes default persistence and then uses a connection close mechanism (in 
-	   a similar manner to HTTP 1.1).</t>
+	   mechanism that establishes default persistence and then uses a connection close signal (in 
+	   a similar manner to HTTP 1.1 <xref target="RFC7320"/>).</t>
 
 	<t>DNS clients and servers MAY close a TCP session at any
 	  time in order to manage local resource constraints.  The
@@ -341,15 +368,6 @@
 	<t>DNS servers of various types are commonly deployed using
 	  anycast <xref target="RFC4786"/>.</t>
 
-	<t>Successive DNS transactions between a client and server
-	  using UDP transport may involve responses generated by
-	  different anycast nodes, and the use of anycast in the
-	  implementation of a DNS server is effectively undetectable
-	  by the client. The edns-tcp-keepalive option SHOULD NOT
-	  be included in responses using UDP transport from servers
-	  provisioned using anycast unless all anycast server nodes are capable
-	  of processing the edns-tcp-keepalive option.</t>
-
 	<t>Changes in network topology between clients and anycast
 	  servers may cause disruption to TCP sessions making use
 	  of edns-tcp-keepalive more often than with TCP sessions
@@ -361,11 +379,22 @@
       </section>
     </section>
 
+	<section title="Intermediary Considerations">
+	<t>It is RECOMMENDED that DNS intermediaries which terminate TCP connections
+		implement keepalive. Should a 
+		non-keepalive-aware intermediary sit between a client and server that both support
+		keepalive a potential side effect will be an increased frequency
+		of the proxy closing idle client connections.</t>
+	</section>
+
     <section title="Security Considerations">
       <t>The edns-tcp-keep-alive option can potentially be abused
 	to request large numbers of sessions in a quick burst.  When
 	a Nameserver detects abusive behaviour, it SHOULD immediately
 	close the TCP connection and free all buffers used.</t>
+
+    <t>Readers are advised to familiarise themselves with the security 
+        considerations outlined in <xref target="DRAFT-5966bis"/></t>
 
       <t>This section needs more work. As usual.</t>
     </section>
@@ -389,8 +418,7 @@
     </section>
 
     <section title="Acknowledgements">
-      <t>The authors acknowledge the contributions of Ray Bellis,
-       Jinmei TATUYA and Mark Andrews.</t>
+      <t>The authors acknowledge the contributions of Jinmei TATUYA and Mark Andrews.</t>
     </section>
   </middle>
 
@@ -403,27 +431,7 @@
       &rfc5966;
       &rfc6824;
       &rfc6891;
-
-   <reference anchor='CHAIN-QUERY'> 
-      <front> 
-      <title>chain Query requests in DNS</title>
-      <author initials='P' surname='Wouters' fullname='P. Wouters'> 
-      <organization>Red Hat</organization>
-      </author> 
-      <date month='October' day='27' year='2014' /> 
-      <abstract><t>
-      This document defines an EDNS0 extension that can be used by a DNSSEC
-      enabled Recursive Nameserver configured as a forwarder to send a
-      single DNS query requesting to receive a complete validation path
-      along with the regular DNS answer, without the need to rapid-fire
-      many UDP requests in an attempt to attain a low latency.
-       </t></abstract> 
-      </front> 
-      <seriesInfo name='Internet-Draft' value='draft-ietf-dnsop-edns-chain-query' /> 
-      <format type='TXT' 
-            target='http://www.ietf.org/internet-drafts/draft-ietf-dnsop-edns-chain-query-01.txt' /> 
-   </reference> 
-
+      &rfc7320;
     </references>
 
     <references title="Informative References">
@@ -450,6 +458,27 @@
         <seriesInfo name="ISC-TN" value="2012-1-Draft1"/>
         <format type="TXT" target="http://ss.vix.su/~vixie/isc-tn-2012-1.txt"/>
       </reference>
+
+      <reference anchor='CHAIN-QUERY'> 
+         <front> 
+         <title>Chain Query requests in DNS</title>
+         <author initials='P' surname='Wouters' fullname='P. Wouters'> 
+         <organization>Red Hat</organization>
+         </author> 
+         <date month='October' day='27' year='2014' /> 
+         <abstract><t>
+         This document defines an EDNS0 extension that can be used by a DNSSEC
+         enabled Recursive Nameserver configured as a forwarder to send a
+         single DNS query requesting to receive a complete validation path
+         along with the regular DNS answer, without the need to rapid-fire
+         many UDP requests in an attempt to attain a low latency.
+          </t></abstract> 
+         </front> 
+         <seriesInfo name='Internet-Draft' value='draft-ietf-dnsop-edns-chain-query' /> 
+         <format type='TXT' 
+               target='http://www.ietf.org/internet-drafts/draft-ietf-dnsop-edns-chain-query-01.txt' /> 
+      </reference>
+
       <reference anchor='STARTTLS'> 
          <front> 
          <title>TLS for DNS: Initiation and Performance Considerations</title>
@@ -471,11 +500,35 @@
          <author initials='P' surname='Hoffman' fullname='P. Hoffman'> 
             <organization>VPN Consortium</organization>
          </author>
-         <date month='February' day='12' year='2015' /> 
+         <date month='May' day='5' year='2015' /> 
          </front> 
-         <seriesInfo name='Internet-Draft' value='draft-hzhwm-dprive-start-tls-for-dns-02' /> 
+         <seriesInfo name='Internet-Draft' value='draft-ietf-dprive-start-tls-for-dns-02' /> 
          <format type='TXT' 
-               target='https://tools.ietf.org/html/draft-ietf-dprive-start-tls-for-dns-00' /> 
+               target='https://tools.ietf.org/html/draft-ietf-dprive-start-tls-for-dns-02' /> 
+      </reference>
+      <reference anchor='DRAFT-5966bis'> 
+         <front> 
+         <title>DNS Transport over TCP - Implementation Requirements</title>
+         <author initials='J' surname='Dickinson' fullname='J. Dickinson'> 
+         <organization>Sinodun Internet Technologies</organization>
+         </author> 
+         <author initials='S' surname='Dickinson' fullname='S. Dickinson'> 
+          <organization>Sinodun Internet Technologies</organization>
+          </author>
+         <author initials='R' surname='Bellis' fullname='R. Bellis'> 
+         <organization>ISC</organization>
+         </author>
+         <author initials='A' surname='Mankin' fullname='A. Mankin'> 
+           <organization>Verisign Labs</organization>
+         </author>
+         <author initials='D' surname='Wessels' fullname='D. Wessels'> 
+             <organization>Verisign Labs</organization>
+         </author>
+         <date month='July' day='?' year='2015' /> 
+         </front> 
+         <seriesInfo name='Internet-Draft' value='draft-ietf-dnsop-5966bis-02' /> 
+         <format type='TXT' 
+               target='https://tools.ietf.org/html/draft-ietf-dnsop-5966bis-02' /> 
       </reference>
     </references>
 
@@ -501,7 +554,7 @@
             <t>Added more detail on server side requirements when supporting keepalive in terms
                 of resource and connection management.</t>
             <t>Added discussion of EDNS0 per-message limitation and implications of this.</t>
-            <t>Added reference to STARTTLS draft</t>
+            <t>Added reference to STARTTLS draft and RFC7320.</t>
           </section>
         <section title="draft-ietf-dnsop-edns-tcp-keepalive-01">
           <t>Version bump with no changes</t>

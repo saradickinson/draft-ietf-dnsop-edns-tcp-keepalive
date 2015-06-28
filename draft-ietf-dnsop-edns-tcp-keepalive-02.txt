@@ -6,6 +6,10 @@ dnsop                                                         P. Wouters
 Internet-Draft                                                   Red Hat
 Intended status: Standards Track                                J. Abley
 Expires: April 30, 2015                                        Dyn, Inc.
+                                                            S. Dickinson
+                                                                 Sinodun
+                                                               R. Bellis
+                                                                     ISC
                                                         October 27, 2014
 
 
@@ -47,16 +51,14 @@ Status of This Memo
 
    This Internet-Draft will expire on April 30, 2015.
 
-Copyright Notice
 
 
-
-
-
-Wouters & Abley          Expires April 30, 2015                 [Page 1]
+Wouters, et al.          Expires April 30, 2015                 [Page 1]
 
 Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
+
+Copyright Notice
 
    Copyright (c) 2014 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
@@ -73,7 +75,7 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
 Table of Contents
 
-   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
    2.  Requirements Notation . . . . . . . . . . . . . . . . . . . .   4
    3.  The edns-tcp-keepalive Option . . . . . . . . . . . . . . . .   4
      3.1.  Option Format . . . . . . . . . . . . . . . . . . . . . .   5
@@ -85,13 +87,14 @@ Table of Contents
        3.3.2.  Sending Responses . . . . . . . . . . . . . . . . . .   6
      3.4.  TCP Session Management  . . . . . . . . . . . . . . . . .   6
      3.5.  Non-Clean Paths . . . . . . . . . . . . . . . . . . . . .   7
-     3.6.  Anycast Considerations  . . . . . . . . . . . . . . . . .   8
-   4.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
-   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
-   6.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   9
-   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
-     7.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
-     7.2.  Informative References  . . . . . . . . . . . . . . . . .   9
+     3.6.  Anycast Considerations  . . . . . . . . . . . . . . . . .   7
+   4.  Intermediary Considerations . . . . . . . . . . . . . . . . .   8
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
+   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
+   7.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   8
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   8
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
+     8.2.  Informative References  . . . . . . . . . . . . . . . . .   9
    Appendix A.  Editors' Notes . . . . . . . . . . . . . . . . . . .  10
      A.1.  Venue . . . . . . . . . . . . . . . . . . . . . . . . . .  10
      A.2.  Abridged Change History . . . . . . . . . . . . . . . . .  10
@@ -102,18 +105,19 @@ Table of Contents
        A.2.5.  draft-wouters-edns-tcp-keepalive-00 . . . . . . . . .  11
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  11
 
-1.  Introduction
-
-   DNS messages between clients and servers may be received over either
-   UDP or TCP [RFC1035].  Historically, DNS clients used API's that only
 
 
 
-Wouters & Abley          Expires April 30, 2015                 [Page 2]
+
+Wouters, et al.          Expires April 30, 2015                 [Page 2]
 
 Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
 
+1.  Introduction
+
+   DNS messages between clients and servers may be received over either
+   UDP or TCP [RFC1035].  Historically, DNS clients used API's that only
    facilitated sending and receiving a single query over either UDP or
    TCP.  New APIs and deployment of DNSSEC validating resolvers on hosts
    that in the past were using stub resolving only is increasing the DNS
@@ -123,8 +127,8 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
    since clients that have fallen back to TCP transport in response to a
    truncated response typically only uses the TCP session for a single
    (request, response) pair, continuing with UDP transport for
-   subsequent queries.  Clients wishing to use other TCP based
-   technologies, for example TLS, would also benefit from the set-up
+   subsequent queries.  Clients wishing to use other stream-based
+   transport protocols for DNS would also benefit from the set-up
    amortisation afforded by long lived connections.
 
    UDP transport is stateless, and hence presents a much lower resource
@@ -158,17 +162,18 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
    transaction is substantial, increasing the transaction time for a
    single (request, response) pair of DNS messages from 1 x RTT to 2 x
    RTT.  There is no such overhead for a session that is already
+
+
+
+Wouters, et al.          Expires April 30, 2015                 [Page 3]
+
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
+
+
    established, however, and the overall impact of the TCP setup
    handshake when the resulting session is used to exchange N DNS
    message pairs over a single session, (1 + N)/N, approaches unity as N
    increases.
-
-
-
-Wouters & Abley          Expires April 30, 2015                 [Page 3]
-
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
-
 
    (It should perhaps be noted that the overhead for a DNS transaction
    over UDP truncated due to RRL is 3x RTT, higher than the overhead
@@ -194,9 +199,9 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
    The reduced overhead of this extension adds up significantly when
    combined with other edns extensions, such as [CHAIN-QUERY] and
-   [STARTTLS].  For example, the combination of these such EDNS
-   extensions make it possible for hosts on high-latency mobile networks
-   to natively perform DNSSEC validation and encrypt queries.
+   [STARTTLS].  For example, the combination of these EDNS extensions
+   make it possible for hosts on high-latency mobile networks to
+   natively perform DNSSEC validation and encrypt queries.
 
 2.  Requirements Notation
 
@@ -216,12 +221,7 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
 
 
-
-
-
-
-
-Wouters & Abley          Expires April 30, 2015                 [Page 4]
+Wouters, et al.          Expires April 30, 2015                 [Page 4]
 
 Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
@@ -270,29 +270,27 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
    A DNS client that receives a response using TCP transport that
    includes the edns-tcp-keepalive option MAY keep the existing TCP
    session open when it is idle.  It SHOULD honour the timeout and
-   initiate close of the connection before the timeout expires.  [Add
-   reference to 5966 idle discussion?]
+   initiate close of the connection before the timeout expires.
+
+   A DNS client that receives a response that includes the edns-tcp-
+   keepalive option with a TIMEOUT value of 0 should send no more
 
 
 
-
-
-Wouters & Abley          Expires April 30, 2015                 [Page 5]
+Wouters, et al.          Expires April 30, 2015                 [Page 5]
 
 Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
 
-   A DNS client that receives a response that includes the edns-tcp-
-   keepalive option with a TIMEOUT value of 0 should send no more
    queries on that connection and initiate closing the connection as
    soon as it has received all outstanding responses.
 
    A DNS client that sent a query containing the edns-keepalive-option
    but receives a response that does not contain the edns-keepalive-
    option should assume the server does not support keepalive and behave
-   following the guidance in 5966-bis (TODO: Add reference).  This holds
-   true even if a previous edns-keepalive-option exchange occurred on
-   the existing TCP connection.
+   following the guidance in [DRAFT-5966bis].  This holds true even if a
+   previous edns-keepalive-option exchange occurred on the existing TCP
+   connection.
 
 3.3.  Use by DNS Servers
 
@@ -324,28 +322,22 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
    Effective limits for the number of active sessions that can be
    maintained on individual clients and servers should be established,
    either as configuration options or by interrogation of process limits
-   imposed by the operating system.  In particular, servers that signal
-   keepalive capability should engage in TCP connection management by
-   recycling existing connections when appropriate, closing connections
-   gracefully and managing request queues to enable fair use.(ref
-   5966-bis here?)
-
-
-
-
-Wouters & Abley          Expires April 30, 2015                 [Page 6]
-
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
-
-
-   QUESTION: Should this be worded more strongly to advise that for
-   servers that support keepalive TCP should be considered on an equal
-   footing to UDP and server implementors and operators should make
-   adequate provision for this.
+   imposed by the operating system.  Servers that implement keepalive
+   should also engage in TCP connection management by recycling existing
+   connections when appropriate, closing connections gracefully and
+   managing request queues to enable fair use.
 
    In the event that there is greater demand for TCP sessions than can
    be accommodated, servers may reduce the TIMEOUT value signalled in
    successive DNS messages to minimise idle time on existing sessions.
+
+
+
+Wouters, et al.          Expires April 30, 2015                 [Page 6]
+
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
+
+
    This also allows, for example, clients with other candidate servers
    to query to establish new TCP sessions with different servers in
    expectation that an existing session is likely to be closed, or to
@@ -353,7 +345,7 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
    Based on TCP session resources servers may signal a TIMEOUT value of
    0 to request clients to close connections as soon as possible.  This
-   is useful when, server resources become very low, or a denial-of-
+   is useful when server resources become very low or a denial-of-
    service attack is detected and further maximises the shifting of
    TIME_WAIT state to well-behaved clients.
 
@@ -372,8 +364,8 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
    containing EDNS0 OPT RRs.  This limitation makes persistent
    connection handling via an initial idle timeout signal more
    attractive than a mechanism that establishes default persistence and
-   then uses a connection close mechanism (in a similar manner to HTTP
-   1.1).
+   then uses a connection close signal (in a similar manner to HTTP 1.1
+   [RFC7320]).
 
    DNS clients and servers MAY close a TCP session at any time in order
    to manage local resource constraints.  The algorithm by which clients
@@ -381,18 +373,6 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
    close is not specified in this document.
 
 3.5.  Non-Clean Paths
-
-
-
-
-
-
-
-
-Wouters & Abley          Expires April 30, 2015                 [Page 7]
-
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
-
 
    Many paths between DNS clients and servers suffer from poor hygiene,
    limiting the free flow of DNS messages that include particular EDNS0
@@ -405,13 +385,14 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
    DNS servers of various types are commonly deployed using anycast
    [RFC4786].
 
-   Successive DNS transactions between a client and server using UDP
-   transport may involve responses generated by different anycast nodes,
-   and the use of anycast in the implementation of a DNS server is
-   effectively undetectable by the client.  The edns-tcp-keepalive
-   option SHOULD NOT be included in responses using UDP transport from
-   servers provisioned using anycast unless all anycast server nodes are
-   capable of processing the edns-tcp-keepalive option.
+
+
+
+
+Wouters, et al.          Expires April 30, 2015                 [Page 7]
+
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
+
 
    Changes in network topology between clients and anycast servers may
    cause disruption to TCP sessions making use of edns-tcp-keepalive
@@ -421,16 +402,27 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
    connection to an unambiguously-unicast address in order to avoid
    disruption due to topology changes.
 
-4.  Security Considerations
+4.  Intermediary Considerations
+
+   It is RECOMMENDED that DNS intermediaries which terminate TCP
+   connections implement keepalive.  Should a non-keepalive-aware
+   intermediary sit between a client and server that both support
+   keepalive a potential side effect will be an increased frequency of
+   the proxy closing idle client connections.
+
+5.  Security Considerations
 
    The edns-tcp-keep-alive option can potentially be abused to request
    large numbers of sessions in a quick burst.  When a Nameserver
    detects abusive behaviour, it SHOULD immediately close the TCP
    connection and free all buffers used.
 
+   Readers are advised to familiarise themselves with the security
+   considerations outlined in [DRAFT-5966bis]
+
    This section needs more work.  As usual.
 
-5.  IANA Considerations
+6.  IANA Considerations
 
    The IANA is directed to assign an EDNS0 option code for the edns-tcp-
    keepalive option from the DNS EDNS0 Option Codes (OPT) registry as
@@ -442,26 +434,23 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
         | [TBA] | edns-tcp-keepalive | Optional | [This document] |
         +-------+--------------------+----------+-----------------+
 
+7.  Acknowledgements
+
+   The authors acknowledge the contributions of Jinmei TATUYA and Mark
+   Andrews.
+
+8.  References
 
 
 
-Wouters & Abley          Expires April 30, 2015                 [Page 8]
+
+
+Wouters, et al.          Expires April 30, 2015                 [Page 8]
 
 Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
 
-6.  Acknowledgements
-
-   The authors acknowledge the contributions of Ray Bellis, Jinmei
-   TATUYA and Mark Andrews.
-
-7.  References
-
-7.1.  Normative References
-
-   [CHAIN-QUERY]
-              Wouters, P., "chain Query requests in DNS", draft-ietf-
-              dnsop-edns-chain-query (work in progress), October 2014.
+8.1.  Normative References
 
    [RFC1035]  Mockapetris, P., "Domain names - implementation and
               specification", STD 13, RFC 1035, November 1987.
@@ -486,7 +475,20 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
    [RFC6891]  Damas, J., Graff, M., and P. Vixie, "Extension Mechanisms
               for DNS (EDNS(0))", STD 75, RFC 6891, April 2013.
 
-7.2.  Informative References
+   [RFC7320]  Nottingham, M., "URI Design and Ownership", BCP 190, RFC
+              7320, July 2014.
+
+8.2.  Informative References
+
+   [CHAIN-QUERY]
+              Wouters, P., "Chain Query requests in DNS", draft-ietf-
+              dnsop-edns-chain-query (work in progress), October 2014.
+
+   [DRAFT-5966bis]
+              Dickinson, J., Dickinson, S., Bellis, R., Mankin, A., and
+              D. Wessels, "DNS Transport over TCP - Implementation
+              Requirements", draft-ietf-dnsop-5966bis-02 (work in
+              progress), July 2015.
 
    [RRL]      Vixie, P. and V. Schryver, "DNS Response Rate Limiting
               (DNS RRL)", ISC-TN 2012-1-Draft1, April 2012.
@@ -494,14 +496,12 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
    [STARTTLS]
               Hu, Z., Zhu, L., Heidemann, J., Mankin, A., Wessels, D.,
               and P. Hoffman, "TLS for DNS: Initiation and Performance
-              Considerations", draft-hzhwm-dprive-start-tls-for-dns-02
-              (work in progress), February 2015.
+              Considerations", draft-ietf-dprive-start-tls-for-dns-02
+              (work in progress), May 2015.
 
 
 
-
-
-Wouters & Abley          Expires April 30, 2015                 [Page 9]
+Wouters, et al.          Expires April 30, 2015                 [Page 9]
 
 Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
@@ -542,7 +542,7 @@ A.2.1.  draft-ietf-dnsop-edns-tcp-keepalive-02
    Added discussion of EDNS0 per-message limitation and implications of
    this.
 
-   Added reference to STARTTLS draft
+   Added reference to STARTTLS draft and RFC7320.
 
 A.2.2.  draft-ietf-dnsop-edns-tcp-keepalive-01
 
@@ -557,7 +557,7 @@ A.2.4.  draft-wouters-edns-tcp-keepalive-01
 
 
 
-Wouters & Abley          Expires April 30, 2015                [Page 10]
+Wouters, et al.          Expires April 30, 2015                [Page 10]
 
 Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
@@ -587,30 +587,30 @@ Authors' Addresses
    Email: jabley@dyn.com
 
 
+   Sara Dickinson
+   Sinodun Internet Technologies
+   Magdalen Centre
+   Oxford Science Park
+   Oxford  OX4 4GA
+   UK
+
+   Email: sara@sinodun.com
+   URI:   http://sinodun.com
+
+
+   Ray Bellis
+   Internet Systems Consortium, Inc
+   950 Charter Street
+   Redwood City  CA  94063
+   USA
+
+   Phone: +1 650 423 1200
+   Email: ray@isc.org
+   URI:   http://www.isc.org
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Wouters & Abley          Expires April 30, 2015                [Page 11]
+Wouters, et al.          Expires April 30, 2015                [Page 11]

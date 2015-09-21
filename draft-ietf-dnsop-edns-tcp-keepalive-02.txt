@@ -5,12 +5,12 @@
 dnsop                                                         P. Wouters
 Internet-Draft                                                   Red Hat
 Intended status: Standards Track                                J. Abley
-Expires: April 30, 2015                                        Dyn, Inc.
+Expires: January 4, 2016                                       Dyn, Inc.
                                                             S. Dickinson
                                                                  Sinodun
                                                                R. Bellis
                                                                      ISC
-                                                        October 27, 2014
+                                                            July 3, 2015
 
 
                   The edns-tcp-keepalive EDNS0 Option
@@ -49,18 +49,18 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 30, 2015.
+   This Internet-Draft will expire on January 4, 2016.
 
 
 
-Wouters, et al.          Expires April 30, 2015                 [Page 1]
+Wouters, et al.          Expires January 4, 2016                [Page 1]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option         July 2015
 
 
 Copyright Notice
 
-   Copyright (c) 2014 IETF Trust and the persons identified as the
+   Copyright (c) 2015 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Wouters, et al.          Expires April 30, 2015                 [Page 2]
+Wouters, et al.          Expires January 4, 2016                [Page 2]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option         July 2015
 
 
 1.  Introduction
@@ -165,9 +165,9 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
 
 
-Wouters, et al.          Expires April 30, 2015                 [Page 3]
+Wouters, et al.          Expires January 4, 2016                [Page 3]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option         July 2015
 
 
    established, however, and the overall impact of the TCP setup
@@ -221,9 +221,9 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
 
 
-Wouters, et al.          Expires April 30, 2015                 [Page 4]
+Wouters, et al.          Expires January 4, 2016                [Page 4]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option         July 2015
 
 
 3.1.  Option Format
@@ -277,9 +277,9 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
 
 
-Wouters, et al.          Expires April 30, 2015                 [Page 5]
+Wouters, et al.          Expires January 4, 2016                [Page 5]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option         July 2015
 
 
    queries on that connection and initiate closing the connection as
@@ -333,9 +333,9 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
 
 
-Wouters, et al.          Expires April 30, 2015                 [Page 6]
+Wouters, et al.          Expires January 4, 2016                [Page 6]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option         July 2015
 
 
    This also allows, for example, clients with other candidate servers
@@ -389,9 +389,9 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
 
 
-Wouters, et al.          Expires April 30, 2015                 [Page 7]
+Wouters, et al.          Expires January 4, 2016                [Page 7]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option         July 2015
 
 
    Changes in network topology between clients and anycast servers may
@@ -445,9 +445,9 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
 
 
-Wouters, et al.          Expires April 30, 2015                 [Page 8]
+Wouters, et al.          Expires January 4, 2016                [Page 8]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option         July 2015
 
 
 8.1.  Normative References
@@ -501,9 +501,9 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
 
 
 
-Wouters, et al.          Expires April 30, 2015                 [Page 9]
+Wouters, et al.          Expires January 4, 2016                [Page 9]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option         July 2015
 
 
 Appendix A.  Editors' Notes
@@ -557,9 +557,9 @@ A.2.4.  draft-wouters-edns-tcp-keepalive-01
 
 
 
-Wouters, et al.          Expires April 30, 2015                [Page 10]
+Wouters, et al.          Expires January 4, 2016               [Page 10]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      October 2014
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option         July 2015
 
 
    Also allow clients to specify KEEPALIVE timeout values, clarify
@@ -613,4 +613,4 @@ Authors' Addresses
 
 
 
-Wouters, et al.          Expires April 30, 2015                [Page 11]
+Wouters, et al.          Expires January 4, 2016               [Page 11]

@@ -133,13 +133,12 @@
 
       <t>A single-datagram exchange over UDP between two hosts
 	can be exploited to enable a reflection attack on a third
-	party. Mitigation of such attacks on authoritative-only
-	servers is possible using an approach known as Response
-	Rate-Limiting <xref target="RRL"/>, an approach designed
-	to minimise the frequency at which legitimate responses are
-	discarded by truncating responses that appear to be motivated
-	by an attacker, forcing legitimate clients to re-query using
-	TCP transport.</t>
+	party. Response Rate Limiting <xref target="RRL"/> is designed to help 
+	mitigate such attacks
+    against authoritative-only servers.  One feature of RRL is to let some
+    amount of responses "slip" through the rate limiter.  These are returned
+    with the TC (truncation) bit set, which causes legitimate clients to re-query
+    using TCP transport.</t>
 
       <t><xref target="RFC1035"/> specified a maximum DNS message
 	size over UDP transport of 512 bytes.  Deployment of DNSSEC
@@ -150,10 +149,10 @@
 	with a corresponding increased incidence of fragmentation.
 	Fragmentation is known to be problematic in general, and
 	has also been implicated in increasing the risk of cache
-	poisoning attacks.</t>
+	poisoning attacks <xref target="fragmentation-considered-poisonous"/>.</t>
 
-      <t>The use of TCP transport does not suffer from the risks
-	of fragmentation nor reflection attacks. However, TCP
+      <t>TCP transport is less susceptible to the risks
+	of fragmentation and reflection attacks. However, TCP
 	transport as currently deployed has expensive overhead.</t>
 
       <t>The overhead of the three-way TCP handshake for a single
@@ -165,36 +164,42 @@
 	to exchange N DNS message pairs over a single session, (1
 	+ N)/N, approaches unity as N increases.</t>
 
+    <t>With increased deployment of DNSSEC and new RRtypes containing
+       application specific cryptographic material, there is an increase
+       in the prevalence of truncated responses received over UDP with
+       fallback to TCP.</t>
+
       <t>(It should perhaps be noted that the overhead for a DNS
 	transaction over UDP truncated due to RRL is 3x RTT, higher
 	than the overhead imposed on the same transaction initiated
 	over TCP.)</t>
 
-      <t>With increased deployment of DNSSEC and new RRtypes containing
-         application specific cryptographic material, there is an increase
-         in the prevalence of truncated responses received over UDP with
-         fallback to TCP.</t>
-
-      <t>The use of TCP transport requires considerably more state
+      <t>The use of TCP transport requires state
 	to be retained on DNS servers.  If a server is to perform
 	adequately with a significant query load received over TCP,
 	it must manage its available resources to ensure that all
-	established TCP sessions are well-used, and those that remain
-	idle for long periods are closed promptly.</t>
+	established TCP sessions are well-used, and idle connections are
+	closed after an appropriate amount of time.</t>
 
       <t>This document proposes a signalling mechanism between DNS
 	clients and servers that provides a means to
-	better balance the use of UDP and TCP transport, reducing
-	the impact of problems associated with UDP whilst constraining
+	better balance the use of UDP and TCP transport (thereby helping to manage
+	the impact of problems associated with UDP),  whilst constraining
 	the impact of TCP on response times and server resources
 	to a manageable level.</t>
 
+    <t>This mechanism will be of benefit both for stub-resolver and
+        resolver-authoritative TCP connections. In the latter case the persistent
+        nature of the TCP connection can provide improved defence against attacks
+        including DDoS. </t>
+
        <t>The reduced overhead of this extension adds up significantly
-          when combined with other edns extensions, such as
-           <xref target="CHAIN-QUERY"/> and <xref target="STARTTLS"/>. For example, 
+          when combined with other EDNS0 extensions, such as
+           <xref target="CHAIN-QUERY"/> and <xref target="DNS-over-TLS"/>. For example, 
            the combination of
-          these EDNS extensions make it possible for hosts on
-          high-latency mobile networks to natively perform DNSSEC validation and encrypt queries.
+          these EDNS0 extensions make it possible for hosts on
+          high-latency mobile networks to natively and efficiently perform DNSSEC
+          validation and encrypt queries.
           </t>
     </section>
 
@@ -226,7 +231,7 @@
 +-------------------------------+-------------------------------+
 !         OPTION-CODE           !         OPTION-LENGTH         !
 +-------------------------------+-------------------------------+
-|                            TIMEOUT                            |
+|           TIMEOUT             !                               |
 +---------------------------------------------------------------+
 ]]></artwork></figure>
 
@@ -254,7 +259,7 @@
             in the first query sent to a server using TCP transport
             to signal their desire to keep the connection open when idle.</t>
 
-          <t>Clients MUST specify a OPTION-LENGTH of 0 and omit the TIMEOUT value.</t>
+          <t>Clients MUST specify an OPTION-LENGTH of 0 and omit the TIMEOUT value.</t>
 
 	</section>
 
@@ -294,15 +299,16 @@
 
         <section title="Sending Responses">
 
-	  <t>DNS servers MAY include the edns-tcp-keepalive option
-	    in responses sent using TCP transport to signal their
+	  <t>A DNS server that receives a query sent using TCP transport that includes an OPT
+         RR MAY include the edns-tcp-keepalive option in the response to signal the
 	    expected idle timeout on a connection. Servers MUST specify the TIMEOUT value
 	    that is currently associated with the TCP session. It is
 	    reasonable for this value to change according to local
 	    resource constraints or in consideration of intermediary behaviour (for example TCP
 	    middleboxes or NATs). The DNS server SHOULD send a
 	    edns-tcp-keepalive option with a timeout of 0 if it deems its local resources
-	    are too low to service more TCP keepalive sessions.</t>
+	    are too low to service more TCP keepalive sessions, or if it wants
+	    clients to close currently open connections.</t>
 	</section>
       </section>
 
@@ -314,7 +320,7 @@
 	  clients and servers should be established, either as
 	  configuration options or by interrogation of process
 	  limits imposed by the operating system. Servers
-	  that implement keepalive should also engage in TCP connection 
+	  that implement edns-tcp-keepalive should also engage in TCP connection 
 	  management by recycling existing connections when appropriate, closing connections gracefully
 	  and managing request queues to enable fair use.</t>
 
@@ -381,22 +387,24 @@
 
 	<section title="Intermediary Considerations">
 	<t>It is RECOMMENDED that DNS intermediaries which terminate TCP connections
-		implement keepalive. Should a 
-		non-keepalive-aware intermediary sit between a client and server that both support
-		keepalive a potential side effect will be an increased frequency
-		of the proxy closing idle client connections.</t>
+		implement edns-tcp-keepalive. An intermediary that does not implement
+		edns-tcp-keepalive but sits between a client and server that both support
+		edns-tcp-keepalive might close idle connections unnecessarily.</t>
 	</section>
 
     <section title="Security Considerations">
-      <t>The edns-tcp-keep-alive option can potentially be abused
+      <t>The edns-tcp-keepalive option can potentially be abused
 	to request large numbers of sessions in a quick burst.  When
 	a Nameserver detects abusive behaviour, it SHOULD immediately
-	close the TCP connection and free all buffers used.</t>
+	close the TCP connection and free the resources used.</t>
+
+    <t>Servers could choose to monitor client behaviour with respect to the
+        edns-tcp-keepalive option to build up profiles of clients that do not honour
+        the specified timeout.</t>
 
     <t>Readers are advised to familiarise themselves with the security 
         considerations outlined in <xref target="DRAFT-5966bis"/></t>
 
-      <t>This section needs more work. As usual.</t>
     </section>
 
     <section title="IANA Considerations">
@@ -418,7 +426,9 @@
     </section>
 
     <section title="Acknowledgements">
-      <t>The authors acknowledge the contributions of Jinmei TATUYA and Mark Andrews.</t>
+      <t>The authors acknowledge the contributions of Jinmei TATUYA and Mark Andrews.
+          Thanks to Duane Wessels for detailed review and the many
+          others who contributed to the mailing list discussion. </t>
     </section>
   </middle>
 
@@ -465,7 +475,7 @@
          <author initials='P' surname='Wouters' fullname='P. Wouters'> 
          <organization>Red Hat</organization>
          </author> 
-         <date month='October' day='27' year='2014' /> 
+         <date month='March' day='09' year='2015' /> 
          <abstract><t>
          This document defines an EDNS0 extension that can be used by a DNSSEC
          enabled Recursive Nameserver configured as a forwarder to send a
@@ -476,10 +486,10 @@
          </front> 
          <seriesInfo name='Internet-Draft' value='draft-ietf-dnsop-edns-chain-query' /> 
          <format type='TXT' 
-               target='http://www.ietf.org/internet-drafts/draft-ietf-dnsop-edns-chain-query-01.txt' /> 
+               target='http://www.ietf.org/internet-drafts/draft-ietf-dnsop-edns-chain-query-02.txt' /> 
       </reference>
 
-      <reference anchor='STARTTLS'> 
+      <reference anchor='DNS-over-TLS'> 
          <front> 
          <title>TLS for DNS: Initiation and Performance Considerations</title>
          <author initials='Z' surname='Hu' fullname='Z. Hu'> 
@@ -500,11 +510,11 @@
          <author initials='P' surname='Hoffman' fullname='P. Hoffman'> 
             <organization>VPN Consortium</organization>
          </author>
-         <date month='May' day='5' year='2015' /> 
+         <date month='September' day='18' year='2015' /> 
          </front> 
-         <seriesInfo name='Internet-Draft' value='draft-ietf-dprive-start-tls-for-dns-02' /> 
+         <seriesInfo name='Internet-Draft' value='draft-ietf-dprive-dns-over-tls-00' /> 
          <format type='TXT' 
-               target='https://tools.ietf.org/html/draft-ietf-dprive-start-tls-for-dns-02' /> 
+               target='https://tools.ietf.org/html/draft-ietf-dprive-dns-over-tls-00' /> 
       </reference>
       <reference anchor='DRAFT-5966bis'> 
          <front> 
@@ -524,20 +534,40 @@
          <author initials='D' surname='Wessels' fullname='D. Wessels'> 
              <organization>Verisign Labs</organization>
          </author>
-         <date month='July' day='?' year='2015' /> 
+         <date month='September' day='20' year='2015' /> 
          </front> 
-         <seriesInfo name='Internet-Draft' value='draft-ietf-dnsop-5966bis-02' /> 
+         <seriesInfo name='Internet-Draft' value='draft-ietf-dnsop-5966bis-03' /> 
          <format type='TXT' 
-               target='https://tools.ietf.org/html/draft-ietf-dnsop-5966bis-02' /> 
+               target='https://tools.ietf.org/html/draft-ietf-dnsop-5966bis-03' /> 
       </reference>
+        <reference anchor='fragmentation-considered-poisonous'> 
+           <front> 
+           <title>Fragmentation Considered Poisonous</title>
+           <author initials='A' surname='Herzberg' fullname='A. Herzberg'> 
+           </author> 
+           <author initials='H' surname='Shulman' fullname='H. Shulman'> 
+            </author>
+           <date month='May' day='?' year='2012' /> 
+           </front> 
+           <seriesInfo name='arXiv' value='1205.4011' /> 
+           <format type='TXT' 
+                 target='http://arxiv.org/abs/1205.4011' /> 
+        </reference>
     </references>
 
     <section title="Editors' Notes">
-      <section title="Venue">
-        <t>An appropriate venue for discussion of this document is
-          dnsop@ietf.org.</t>
-      </section>
       <section title="Abridged Change History">
+          <section title="draft-ietf-dnsop-edns-tcp-keepalive-03">
+              <t>Clarified that a response to a query with any OPT RR may contain
+                  the ends-tcp-keepalive option.</t>
+              <t>Corrected TIMEOUT length from 4 to 2 in the diagram.</t>
+              <t>Updated references, including name change of [STARTTLS] ->  [DNS-over-TLS] and 
+                  adding reference for cache poisening.</t>
+              <t>Updated wording in section on Intermediary Considerations.</t>
+              <t>Updated wording describing RRL.</t>
+              <t>Added paragraph to security section describing client behaviour profiles.</t>
+              <t>Added wording to introduction on use case for stub/resolver/authoritative.</t>
+          </section>
           <section title="draft-ietf-dnsop-edns-tcp-keepalive-02">
             <t>Changed timeout value to idle timeout and re-phrased document around this.</t>
             <t>Changed units of timeout to 100ms to allow values less than 1 second.</t>

@@ -83,7 +83,7 @@
         <uri>http://www.isc.org</uri>
     </address>
     </author>
-    <date month="September" day="21" year="2015" />
+    <date month="September" year="2015" />
     <area>ops</area>
     <workgroup>dnsop</workgroup>
 
@@ -562,7 +562,7 @@
                   the ends-tcp-keepalive option.</t>
               <t>Corrected TIMEOUT length from 4 to 2 in the diagram.</t>
               <t>Updated references, including name change of [STARTTLS] ->  [DNS-over-TLS] and 
-                  adding reference for cache poisening.</t>
+                  adding reference for cache poisoning.</t>
               <t>Updated wording in section on Intermediary Considerations.</t>
               <t>Updated wording describing RRL.</t>
               <t>Added paragraph to security section describing client behaviour profiles.</t>

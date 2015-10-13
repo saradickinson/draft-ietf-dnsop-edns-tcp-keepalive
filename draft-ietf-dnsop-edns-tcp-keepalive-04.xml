@@ -83,7 +83,7 @@
         <uri>http://www.isc.org</uri>
     </address>
     </author>
-    <date month="September" year="2015" />
+    <date month="October" year="2015" />
     <area>ops</area>
     <workgroup>dnsop</workgroup>
 
@@ -239,7 +239,7 @@
 
           <list style="hanging">
             <t hangText="OPTION-CODE: ">the EDNS0 option code
-              assigned to edns-tcp-keepalive, [TBD]</t>
+              assigned to edns-tcp-keepalive, TBD1</t>
 
             <t hangText="OPTION-LENGTH: ">the value 0 if the TIMEOUT is omitted, the value 2 if it 
                 is present;</t>
@@ -259,6 +259,10 @@
             in the first query sent to a server using TCP transport
             to signal their desire to keep the connection open when idle.</t>
 
+            <t>DNS clients MAY include the edns-tcp-keepalive option
+              in subsequent queries sent to a server using TCP transport
+              to signal their continued desire to keep the connection open when idle.</t>
+
           <t>Clients MUST specify an OPTION-LENGTH of 0 and omit the TIMEOUT value.</t>
 
 	</section>
@@ -275,7 +279,7 @@
 	    of the connection before the timeout expires.</t>
 
 	  <t>A DNS client that receives a response that includes the edns-tcp-keepalive option
-	      with a TIMEOUT value of 0 should send no more queries on that connection and initiate
+	      with a TIMEOUT value of 0 SHOULD send no more queries on that connection and initiate
 	      closing the connection as soon as it has received all outstanding responses.</t>
 
       <t> A DNS client that sent a query containing the edns-keepalive-option 
@@ -351,7 +355,13 @@
 	   client does not send any further requests containing EDNS0 OPT RRs. This limitation makes 
 	   persistent connection handling via an initial idle timeout signal more attractive than a 
 	   mechanism that establishes default persistence and then uses a connection close signal (in 
-	   a similar manner to HTTP 1.1 <xref target="RFC7320"/>).</t>
+	   a similar manner to HTTP 1.1 <xref target="RFC7320"/>). </t>
+
+	   <t>Clients might choose to send the edns-tcp-keepalive option regularly 
+	   during a TCP session to increase the chance of being 
+	   notified should the server modify the timeout associated with a session. The
+	   algorithm for choosing when to do this is out of scope of this document and
+	   is left up to the implementor and/or operator.</t>
 
 	<t>DNS clients and servers MAY close a TCP session at any
 	  time in order to manage local resource constraints.  The
@@ -395,7 +405,7 @@
     <section title="Security Considerations">
       <t>The edns-tcp-keepalive option can potentially be abused
 	to request large numbers of sessions in a quick burst.  When
-	a Nameserver detects abusive behaviour, it SHOULD immediately
+	a DNS Server detects abusive behaviour, it SHOULD immediately
 	close the TCP connection and free the resources used.</t>
 
     <t>Servers could choose to monitor client behaviour with respect to the
@@ -418,7 +428,7 @@
         <ttcol>Status</ttcol>
         <ttcol>Reference</ttcol>
 
-        <c>[TBA]</c>
+        <c>TBD1</c>
         <c>edns-tcp-keepalive</c>
         <c>Optional</c>
         <c>[This document]</c>
@@ -438,13 +448,12 @@
       &rfc2119;
       &rfc4033;
       &rfc4786;
-      &rfc5966;
-      &rfc6824;
       &rfc6891;
       &rfc7320;
     </references>
 
     <references title="Informative References">
+      &rfc6824;
       <reference anchor="RRL">
         <front>
           <title>DNS Response Rate Limiting (DNS RRL)</title>
@@ -510,11 +519,11 @@
          <author initials='P' surname='Hoffman' fullname='P. Hoffman'> 
             <organization>VPN Consortium</organization>
          </author>
-         <date month='September' day='18' year='2015' /> 
+         <date month='October' day='11' year='2015' /> 
          </front> 
-         <seriesInfo name='Internet-Draft' value='draft-ietf-dprive-dns-over-tls-00' /> 
+         <seriesInfo name='Internet-Draft' value='draft-ietf-dprive-dns-over-tls-01' /> 
          <format type='TXT' 
-               target='https://tools.ietf.org/html/draft-ietf-dprive-dns-over-tls-00' /> 
+               target='https://tools.ietf.org/html/draft-ietf-dprive-dns-over-tls-01' /> 
       </reference>
       <reference anchor='DRAFT-5966bis'> 
          <front> 
@@ -557,11 +566,12 @@
 
     <section title="Editors' Notes">
       <section title="Abridged Change History">
+          <t>[Note to RFC Editor: please remove this section prior to publication.]</t>
           <section title="draft-ietf-dnsop-edns-tcp-keepalive-03">
               <t>Clarified that a response to a query with any OPT RR may contain
                   the ends-tcp-keepalive option.</t>
               <t>Corrected TIMEOUT length from 4 to 2 in the diagram.</t>
-              <t>Updated references, including name change of [STARTTLS] ->  [DNS-over-TLS] and 
+              <t>Updated references, including name change of STARTTLS ->  DNS-over-TLS and 
                   adding reference for cache poisoning.</t>
               <t>Updated wording in section on Intermediary Considerations.</t>
               <t>Updated wording describing RRL.</t>

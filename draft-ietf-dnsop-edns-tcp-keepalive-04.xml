@@ -260,8 +260,8 @@
             to signal their desire to keep the connection open when idle.</t>
 
             <t>DNS clients MAY include the edns-tcp-keepalive option
-              in subsequent queries sent to a server using TCP transport
-              to signal their continued desire to keep the connection open when idle.</t>
+               in subsequent queries sent to a server using TCP transport
+               to signal their continued desire to keep the connection open when idle.</t>
 
           <t>Clients MUST specify an OPTION-LENGTH of 0 and omit the TIMEOUT value.</t>
 
@@ -357,11 +357,13 @@
 	   mechanism that establishes default persistence and then uses a connection close signal (in 
 	   a similar manner to HTTP 1.1 <xref target="RFC7320"/>). </t>
 
-	   <t>Clients might choose to send the edns-tcp-keepalive option regularly 
-	   during a TCP session to increase the chance of being 
-	   notified should the server modify the timeout associated with a session. The
-	   algorithm for choosing when to do this is out of scope of this document and
-	   is left up to the implementor and/or operator.</t>
+	   <t>If a client includes the edns-tcp-keepalive option in the first 
+        query, it SHOULD include an EDNS0 OPT RR periodically
+        in any further messages it sends during the TCP session.
+        This will increase the chance of the client being notified should
+        the server modify the timeout associated with a session. The
+	    algorithm for choosing when to do this is out of scope of this document and
+	    is left up to the implementor and/or operator.</t>
 
 	<t>DNS clients and servers MAY close a TCP session at any
 	  time in order to manage local resource constraints.  The
@@ -484,7 +486,7 @@
          <author initials='P' surname='Wouters' fullname='P. Wouters'> 
          <organization>Red Hat</organization>
          </author> 
-         <date month='March' day='09' year='2015' /> 
+         <date month='October' day='19' year='2015' /> 
          <abstract><t>
          This document defines an EDNS0 extension that can be used by a DNSSEC
          enabled Recursive Nameserver configured as a forwarder to send a
@@ -495,7 +497,7 @@
          </front> 
          <seriesInfo name='Internet-Draft' value='draft-ietf-dnsop-edns-chain-query' /> 
          <format type='TXT' 
-               target='http://www.ietf.org/internet-drafts/draft-ietf-dnsop-edns-chain-query-02.txt' /> 
+               target='http://www.ietf.org/internet-drafts/draft-ietf-dnsop-edns-chain-query-04.txt' /> 
       </reference>
 
       <reference anchor='DNS-over-TLS'> 
@@ -567,6 +569,15 @@
     <section title="Editors' Notes">
       <section title="Abridged Change History">
           <t>[Note to RFC Editor: please remove this section prior to publication.]</t>
+          <section title="draft-ietf-dnsop-edns-tcp-keepalive-04">
+              <t>Adding wording to sections 3.2.1 and 3.4 to clarify client behaviour
+                 on subsequent queries on a TCP connection.</t>
+              <t>Changed the should to a SHOULD in section 3.2.2</t>
+              <t>Changed Nameserver to DNS server in section 5.</t>
+              <t>Updated references.</t>
+              <t>Changed reference to RFC6824 to be informative.</t>
+              <t>Corrected reference to requested EDNS0 option code to be 'TBD1'.</t>
+          </section>
           <section title="draft-ietf-dnsop-edns-tcp-keepalive-03">
               <t>Clarified that a response to a query with any OPT RR may contain
                   the ends-tcp-keepalive option.</t>

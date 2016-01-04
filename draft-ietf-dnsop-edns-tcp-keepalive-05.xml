@@ -98,11 +98,9 @@
 
       <t>This document defines an EDNS0 option ("edns-tcp-keepalive")
 	that allows DNS servers to signal a variable idle timeout.
-	This signalling facilitates a better balance of
-	UDP and TCP transport between individual clients and servers,
-	reducing the impact of problems associated with UDP transport and
-	allowing the state associated with TCP transport to be managed
-	effectively with minimal impact on the DNS transaction time.</t>
+	This signalling encourages the use of long-lived TCP connections
+     by allowing the state associated with TCP transport to be managed
+     effectively with minimal impact on the DNS transaction time.</t>
     </abstract>
   </front>
 
@@ -120,9 +118,7 @@
         clients that have fallen back to TCP transport in response to a
         truncated response typically only uses the TCP session for a
         single (request, response) pair, continuing with UDP transport
-        for subsequent queries. Clients wishing to use
-        other stream-based transport protocols for DNS would also benefit
-        from the set-up amortisation afforded by long lived connections.</t>
+        for subsequent queries.</t>
 
       <t>UDP transport is stateless, and hence presents a much
 	lower resource burden on a busy DNS server than TCP. An
@@ -153,26 +149,27 @@
 
       <t>TCP transport is less susceptible to the risks
 	of fragmentation and reflection attacks. However, TCP
-	transport as currently deployed has expensive overhead.</t>
+	transport as currently deployed has expensive setup overhead.</t>
 
       <t>The overhead of the three-way TCP handshake for a single
 	DNS transaction is substantial, increasing the transaction
 	time for a single (request, response) pair of DNS messages
-	from 1 x RTT to 2 x RTT. There is no such overhead for a session that
-	is already established, however, and the overall impact of
-	the TCP setup handshake when the resulting session is used
-	to exchange N DNS message pairs over a single session, (1
-	+ N)/N, approaches unity as N increases.</t>
+	from 1 x RTT to 2 x RTT. 
+	There is no such overhead for a session that is already established
+	therefore the overhead of the initial TCP handshake is minimised when
+	the resulting session is used to exchange multiple DNS message pairs
+	over a single session.  The extra RTT time for session setup can be
+	represented as the equation (1 + N)/N, where N represents the number of
+	DNS message pairs that utilize the session and the result approaches
+	unity as N increases.</t>
 
     <t>With increased deployment of DNSSEC and new RRtypes containing
        application specific cryptographic material, there is an increase
        in the prevalence of truncated responses received over UDP with
-       fallback to TCP.</t>
-
-      <t>(It should perhaps be noted that the overhead for a DNS
+       fallback to TCP. The overhead for a DNS
 	transaction over UDP truncated due to RRL is 3x RTT, higher
 	than the overhead imposed on the same transaction initiated
-	over TCP.)</t>
+	over TCP.</t>
 
       <t>The use of TCP transport requires state
 	to be retained on DNS servers.  If a server is to perform
@@ -182,11 +179,9 @@
 	closed after an appropriate amount of time.</t>
 
       <t>This document proposes a signalling mechanism between DNS
-	clients and servers that provides a means to
-	better balance the use of UDP and TCP transport (thereby helping to manage
-	the impact of problems associated with UDP),  whilst constraining
-	the impact of TCP on response times and server resources
-	to a manageable level.</t>
+	clients and servers that encourages the use of long-lived TCP connections
+     by allowing the state associated with TCP transport to be managed
+     effectively with minimal impact on the DNS transaction time.</t>
 
     <t>This mechanism will be of benefit both for stub-resolver and
         resolver-authoritative TCP connections. In the latter case the persistent
@@ -214,7 +209,8 @@
       <t>This document specifies a new <xref target="RFC6891">EDNS0</xref>
         option, edns-tcp-keepalive, which can be used by DNS clients and
         servers to signal a willingness to keep an idle TCP session open
-        for a certain amount of time to conduct future DNS transactions.
+        to conduct future DNS transactions, with the idle timeout being specified 
+        by the server.
         This specification does not distinguish between different types
         of DNS client and server in the use of this option.</t>
 
@@ -283,7 +279,7 @@
 	      closing the connection as soon as it has received all outstanding responses.</t>
 
       <t> A DNS client that sent a query containing the edns-keepalive-option 
-          but receives a response that does not contain the edns-keepalive-option should assume the
+          but receives a response that does not contain the edns-keepalive-option SHOULD assume the
           server does not support keepalive and behave following the guidance in <xref target="DRAFT-5966bis"/>. 
           This holds true even if a previous edns-keepalive-option exchange occurred on 
           the existing TCP connection.</t>
@@ -390,10 +386,10 @@
 	  servers may cause disruption to TCP sessions making use
 	  of edns-tcp-keepalive more often than with TCP sessions
 	  that omit it, since the TCP sessions are expected to be
-	  longer-lived. Anycast servers MAY make use of TCP multipath
-	  <xref target="RFC6824"/> to anchor the server side of the
-	  TCP connection to an unambiguously-unicast address in
-	  order to avoid disruption due to topology changes.</t>
+	  longer-lived. It might be possible for anycast servers to
+	  avoid disruption due to topology changes by making use of
+	  TCP multipath <xref target="RFC6824"/> to anchor the server
+	  side of the TCP connection to an unambiguously-unicast address.</t>
       </section>
     </section>
 
@@ -406,7 +402,7 @@
 
     <section title="Security Considerations">
       <t>The edns-tcp-keepalive option can potentially be abused
-	to request large numbers of sessions in a quick burst.  When
+	to request large numbers of long-lived sessions in a quick burst.  When
 	a DNS Server detects abusive behaviour, it SHOULD immediately
 	close the TCP connection and free the resources used.</t>
 
@@ -432,7 +428,7 @@
 
         <c>TBD1</c>
         <c>edns-tcp-keepalive</c>
-        <c>Optional</c>
+        <c>Standard</c>
         <c>[This document]</c>
       </texttable>
     </section>
@@ -452,11 +448,36 @@
       &rfc4786;
       &rfc6891;
       &rfc7320;
+      <reference anchor='DRAFT-5966bis'> 
+         <front> 
+         <title>DNS Transport over TCP - Implementation Requirements</title>
+         <author initials='J' surname='Dickinson' fullname='J. Dickinson'> 
+         <organization>Sinodun Internet Technologies</organization>
+         </author> 
+         <author initials='S' surname='Dickinson' fullname='S. Dickinson'> 
+          <organization>Sinodun Internet Technologies</organization>
+          </author>
+         <author initials='R' surname='Bellis' fullname='R. Bellis'> 
+         <organization>ISC</organization>
+         </author>
+         <author initials='A' surname='Mankin' fullname='A. Mankin'> 
+           <organization>Verisign Labs</organization>
+         </author>
+         <author initials='D' surname='Wessels' fullname='D. Wessels'> 
+             <organization>Verisign Labs</organization>
+         </author>
+         <date month='December' day='17' year='2015' /> 
+         </front> 
+         <seriesInfo name='Internet-Draft' value='draft-ietf-dnsop-5966bis' /> 
+         <format type='TXT' 
+               target='https://tools.ietf.org/html/draft-ietf-dnsop-5966bis-05' /> 
+      </reference>
     </references>
 
     <references title="Informative References">
       &rfc6824;
-      <reference anchor="RRL">
+      <reference anchor="RRL"
+       target="http://ss.vix.su/~vixie/isc-tn-2012-1.txt">
         <front>
           <title>DNS Response Rate Limiting (DNS RRL)</title>
 
@@ -477,7 +498,6 @@
           <date year="2012" month="April"/>
         </front>
         <seriesInfo name="ISC-TN" value="2012-1-Draft1"/>
-        <format type="TXT" target="http://ss.vix.su/~vixie/isc-tn-2012-1.txt"/>
       </reference>
 
       <reference anchor='CHAIN-QUERY'> 
@@ -486,7 +506,7 @@
          <author initials='P' surname='Wouters' fullname='P. Wouters'> 
          <organization>Red Hat</organization>
          </author> 
-         <date month='October' day='19' year='2015' /> 
+         <date month='November' day='117' year='2015' /> 
          <abstract><t>
          This document defines an EDNS0 extension that can be used by a DNSSEC
          enabled Recursive Nameserver configured as a forwarder to send a
@@ -497,7 +517,7 @@
          </front> 
          <seriesInfo name='Internet-Draft' value='draft-ietf-dnsop-edns-chain-query' /> 
          <format type='TXT' 
-               target='http://www.ietf.org/internet-drafts/draft-ietf-dnsop-edns-chain-query-04.txt' /> 
+               target='http://www.ietf.org/internet-drafts/draft-ietf-dnsop-edns-chain-query-05.txt' />
       </reference>
 
       <reference anchor='DNS-over-TLS'> 
@@ -521,37 +541,14 @@
          <author initials='P' surname='Hoffman' fullname='P. Hoffman'> 
             <organization>VPN Consortium</organization>
          </author>
-         <date month='October' day='11' year='2015' /> 
+         <date month='December' day='7' year='2015' /> 
          </front> 
-         <seriesInfo name='Internet-Draft' value='draft-ietf-dprive-dns-over-tls-01' /> 
+         <seriesInfo name='Internet-Draft' value='draft-ietf-dprive-dns-over-tls' /> 
          <format type='TXT' 
-               target='https://tools.ietf.org/html/draft-ietf-dprive-dns-over-tls-01' /> 
+               target='https://tools.ietf.org/html/draft-ietf-dprive-dns-over-tls-02' /> 
       </reference>
-      <reference anchor='DRAFT-5966bis'> 
-         <front> 
-         <title>DNS Transport over TCP - Implementation Requirements</title>
-         <author initials='J' surname='Dickinson' fullname='J. Dickinson'> 
-         <organization>Sinodun Internet Technologies</organization>
-         </author> 
-         <author initials='S' surname='Dickinson' fullname='S. Dickinson'> 
-          <organization>Sinodun Internet Technologies</organization>
-          </author>
-         <author initials='R' surname='Bellis' fullname='R. Bellis'> 
-         <organization>ISC</organization>
-         </author>
-         <author initials='A' surname='Mankin' fullname='A. Mankin'> 
-           <organization>Verisign Labs</organization>
-         </author>
-         <author initials='D' surname='Wessels' fullname='D. Wessels'> 
-             <organization>Verisign Labs</organization>
-         </author>
-         <date month='September' day='20' year='2015' /> 
-         </front> 
-         <seriesInfo name='Internet-Draft' value='draft-ietf-dnsop-5966bis-03' /> 
-         <format type='TXT' 
-               target='https://tools.ietf.org/html/draft-ietf-dnsop-5966bis-03' /> 
-      </reference>
-        <reference anchor='fragmentation-considered-poisonous'> 
+        <reference anchor='fragmentation-considered-poisonous'
+         target='http://arxiv.org/abs/1205.4011'> 
            <front> 
            <title>Fragmentation Considered Poisonous</title>
            <author initials='A' surname='Herzberg' fullname='A. Herzberg'> 
@@ -561,14 +558,26 @@
            <date month='May' day='?' year='2012' /> 
            </front> 
            <seriesInfo name='arXiv' value='1205.4011' /> 
-           <format type='TXT' 
-                 target='http://arxiv.org/abs/1205.4011' /> 
         </reference>
     </references>
 
     <section title="Editors' Notes">
       <section title="Abridged Change History">
           <t>[Note to RFC Editor: please remove this section prior to publication.]</t>
+          <section title="draft-ietf-dnsop-edns-tcp-keepalive-05">
+              <t>Reword Abstract and paragraph 9 in Introduction to remove
+                 discussion on balancing UDP/TCP and talk about encouraging use
+                 of long-lived TCP sessions. </t>
+              <t>Section 3.2.2: should -> SHOULD</t>
+              <t>Changed draft-ietf-dnsop-5966bis to be a normative reference, 
+                 therefore adding a dependancy on publication of that as RFC.</t>
+              <t>Reword sentence referring to RFC6824.</t>
+              <t>Update IANA option to Standard.</t>
+              <t>Remove last sentence from 1st paragraph of introduction.</t>
+              <t>Reword paragraph 6 on Introduction, merge paragraph 7 and 8.</t>
+              <t>Reword Section 3, first sentance.</t>
+              <t>Correct missing URIs in 2 references.</t>
+          </section>
           <section title="draft-ietf-dnsop-edns-tcp-keepalive-04">
               <t>Adding wording to sections 3.2.1 and 3.4 to clarify client behaviour
                  on subsequent queries on a TCP connection.</t>

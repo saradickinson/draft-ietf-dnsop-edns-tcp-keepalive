@@ -93,7 +93,7 @@
 	state on a busy server, but can cause truncation and retries
 	over TCP. Additionally, UDP can be exploited for reflection
 	attacks. Using TCP would reduce retransmits and amplification.
-	However, clients commonly use TCP only for fallback and servers
+	However, clients commonly use TCP only for retries and servers
 	typically use idle timeouts on the order of seconds.</t>
 
       <t>This document defines an EDNS0 option ("edns-tcp-keepalive")
@@ -114,9 +114,9 @@
         using stub resolving only is increasing the DNS client base that
         prefer using long lived TCP connections. Long-lived TCP connections
         can result in lower request latency than the case where UDP
-        transport is used and truncated responses are received, since
-        clients that have fallen back to TCP transport in response to a
-        truncated response typically only uses the TCP session for a
+        transport is used and truncated responses are received. This is because
+        clients that retry over TCP following a
+        truncated UDP response typically only use the TCP session for a
         single (request, response) pair, continuing with UDP transport
         for subsequent queries.</t>
 
@@ -166,7 +166,7 @@
     <t>With increased deployment of DNSSEC and new RRtypes containing
        application specific cryptographic material, there is an increase
        in the prevalence of truncated responses received over UDP with
-       fallback to TCP. The overhead for a DNS
+       retries over TCP. The overhead for a DNS
 	transaction over UDP truncated due to RRL is 3x RTT, higher
 	than the overhead imposed on the same transaction initiated
 	over TCP.</t>
@@ -270,9 +270,9 @@
 
 	  <t>A DNS client that receives a response using TCP transport
 	    that includes the edns-tcp-keepalive option MAY keep the
-	    existing TCP session open when it is idle. It SHOULD honour the
-	    timeout and initiate close
-	    of the connection before the timeout expires.</t>
+	    existing TCP session open when it is idle. It SHOULD honour
+	    the timeout received in that response (overriding any previous
+	    timeout) and initiate close of the connection before the timeout expires.</t>
 
 	  <t>A DNS client that receives a response that includes the edns-tcp-keepalive option
 	      with a TIMEOUT value of 0 SHOULD send no more queries on that connection and initiate
@@ -571,12 +571,17 @@
               <t>Section 3.2.2: should -> SHOULD</t>
               <t>Changed draft-ietf-dnsop-5966bis to be a normative reference, 
                  therefore adding a dependancy on publication of that as RFC.</t>
-              <t>Reword sentence referring to RFC6824.</t>
+              <t>Reword sentence referring to RFC6824 since it is informational.</t>
               <t>Update IANA option to Standard.</t>
               <t>Remove last sentence from 1st paragraph of introduction.</t>
-              <t>Reword paragraph 6 on Introduction, merge paragraph 7 and 8.</t>
-              <t>Reword Section 3, first sentance.</t>
+              <t>Reword paragraph 6 in Introduction, merge paragraph 7 and 8.</t>
+              <t>Reword Section 3, first sentence to clarify the timeout is 
+                 specified by the server.</t>
               <t>Correct missing URIs in 2 references.</t>
+              <t>Clarify statement in Section 3.2.2 as how clients should handle
+                 updating the timeout when receiving a response.</t>
+              <t>Reworded first paragraph of Introduction discussing TCP vs
+                 (UDP + retry over TCP). Changed 'fallback' to 'retry' in 2 places.</t>
           </section>
           <section title="draft-ietf-dnsop-edns-tcp-keepalive-04">
               <t>Adding wording to sections 3.2.1 and 3.4 to clarify client behaviour

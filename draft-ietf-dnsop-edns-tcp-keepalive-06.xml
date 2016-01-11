@@ -120,6 +120,13 @@
         single (request, response) pair, continuing with UDP transport
         for subsequent queries.</t>
 
+          <t>The use of TCP transport requires state
+    	to be retained on DNS servers.  If a server is to perform
+    	adequately with a significant query load received over TCP,
+    	it must manage its available resources to ensure that all
+    	established TCP sessions are well-used, and idle connections are
+    	closed after an appropriate amount of time.</t>
+
       <t>UDP transport is stateless, and hence presents a much
 	lower resource burden on a busy DNS server than TCP. An
 	exchange of DNS messages over UDP can also be completed in
@@ -149,7 +156,8 @@
 
       <t>TCP transport is less susceptible to the risks
 	of fragmentation and reflection attacks. However, TCP
-	transport as currently deployed has expensive setup overhead.</t>
+	transport for DNS as currently deployed has expensive setup overhead, compared
+	to using UDP (when no retry is required).</t>
 
       <t>The overhead of the three-way TCP handshake for a single
 	DNS transaction is substantial, increasing the transaction
@@ -170,13 +178,6 @@
 	transaction over UDP truncated due to RRL is 3x RTT, higher
 	than the overhead imposed on the same transaction initiated
 	over TCP.</t>
-
-      <t>The use of TCP transport requires state
-	to be retained on DNS servers.  If a server is to perform
-	adequately with a significant query load received over TCP,
-	it must manage its available resources to ensure that all
-	established TCP sessions are well-used, and idle connections are
-	closed after an appropriate amount of time.</t>
 
       <t>This document proposes a signalling mechanism between DNS
 	clients and servers that encourages the use of long-lived TCP connections
@@ -213,10 +214,16 @@
         by the server.
         This specification does not distinguish between different types
         of DNS client and server in the use of this option.</t>
+        
+        <t><xref target="DRAFT-5966bis"/> defines an 'idle' DNS-over-TCP session from both
+            the client and server perspective. The idle timeout described here
+            begins when the idle condition is met per that definition and
+            should be reset when that condition is lifted i.e. when a client
+            sends a message or when a server receives a message on an idle connection.</t>
 
-<t>
+<!--><t>
 <vspace blankLines="12"/>
-</t>
+</t>-->
 
       <section title="Option Format" anchor="format">
         <t>The edns-tcp-keepalive option is encoded as follows:</t>
@@ -300,12 +307,12 @@
         <section title="Sending Responses">
 
 	  <t>A DNS server that receives a query sent using TCP transport that includes an OPT
-         RR MAY include the edns-tcp-keepalive option in the response to signal the
+         RR (with or without the edns-tcp-keepalive option) 
+         MAY include the edns-tcp-keepalive option in the response to signal the
 	    expected idle timeout on a connection. Servers MUST specify the TIMEOUT value
 	    that is currently associated with the TCP session. It is
 	    reasonable for this value to change according to local
-	    resource constraints or in consideration of intermediary behaviour (for example TCP
-	    middleboxes or NATs). The DNS server SHOULD send a
+	    resource constraints. The DNS server SHOULD send a
 	    edns-tcp-keepalive option with a timeout of 0 if it deems its local resources
 	    are too low to service more TCP keepalive sessions, or if it wants
 	    clients to close currently open connections.</t>
@@ -564,6 +571,14 @@
     <section title="Editors' Notes">
       <section title="Abridged Change History">
           <t>[Note to RFC Editor: please remove this section prior to publication.]</t>
+          <section title="draft-ietf-dnsop-edns-tcp-keepalive-05">
+              <t>Introduction: Moved paragraph 8 to paragraph 2 for readability.</t>
+              <t>Introduction: clarified that TCP has expensive setup overhead compared to UDP.</t>
+              <t>Section 3: Add explicit description of the idle timeout.</t>
+              <t>Section 3.3.2, 1st para: make explicit that query may or may not contain
+                  edns-tcp-keepalive option. </t>
+              <t>Section 3.3.2: remove discussion of intermediary behaviour.</t>
+          </section>
           <section title="draft-ietf-dnsop-edns-tcp-keepalive-05">
               <t>Reword Abstract and paragraph 9 in Introduction to remove
                  discussion on balancing UDP/TCP and talk about encouraging use

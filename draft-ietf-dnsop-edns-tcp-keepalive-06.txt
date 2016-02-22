@@ -5,12 +5,12 @@
 dnsop                                                         P. Wouters
 Internet-Draft                                                   Red Hat
 Intended status: Standards Track                                J. Abley
-Expires: July 14, 2016                                         Dyn, Inc.
+Expires: August 25, 2016                                       Dyn, Inc.
                                                             S. Dickinson
                                                                  Sinodun
                                                                R. Bellis
                                                                      ISC
-                                                        January 11, 2016
+                                                       February 22, 2016
 
 
                   The edns-tcp-keepalive EDNS0 Option
@@ -47,15 +47,15 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on July 14, 2016.
+   This Internet-Draft will expire on August 25, 2016.
 
 
 
 
 
-Wouters, et al.           Expires July 14, 2016                 [Page 1]
+Wouters, et al.          Expires August 25, 2016                [Page 1]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option     February 2016
 
 
 Copyright Notice
@@ -97,7 +97,7 @@ Table of Contents
      8.2.  Informative References  . . . . . . . . . . . . . . . . .  10
    Appendix A.  Editors' Notes . . . . . . . . . . . . . . . . . . .  11
      A.1.  Abridged Change History . . . . . . . . . . . . . . . . .  11
-       A.1.1.  draft-ietf-dnsop-edns-tcp-keepalive-05  . . . . . . .  11
+       A.1.1.  draft-ietf-dnsop-edns-tcp-keepalive-06  . . . . . . .  11
        A.1.2.  draft-ietf-dnsop-edns-tcp-keepalive-05  . . . . . . .  11
        A.1.3.  draft-ietf-dnsop-edns-tcp-keepalive-04  . . . . . . .  12
        A.1.4.  draft-ietf-dnsop-edns-tcp-keepalive-03  . . . . . . .  12
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Wouters, et al.           Expires July 14, 2016                 [Page 2]
+Wouters, et al.          Expires August 25, 2016                [Page 2]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option     February 2016
 
 
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  13
@@ -165,9 +165,9 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
 
 
 
-Wouters, et al.           Expires July 14, 2016                 [Page 3]
+Wouters, et al.          Expires August 25, 2016                [Page 3]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option     February 2016
 
 
    deployed has expensive setup overhead, compared to using UDP (when no
@@ -221,9 +221,9 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
 
 
 
-Wouters, et al.           Expires July 14, 2016                 [Page 4]
+Wouters, et al.          Expires August 25, 2016                [Page 4]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option     February 2016
 
 
 3.  The edns-tcp-keepalive Option
@@ -277,9 +277,9 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
 
 
 
-Wouters, et al.           Expires July 14, 2016                 [Page 5]
+Wouters, et al.          Expires August 25, 2016                [Page 5]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option     February 2016
 
 
    DNS clients MAY include the edns-tcp-keepalive option in subsequent
@@ -333,9 +333,9 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
 
 
 
-Wouters, et al.           Expires July 14, 2016                 [Page 6]
+Wouters, et al.          Expires August 25, 2016                [Page 6]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option     February 2016
 
 
    is reasonable for this value to change according to local resource
@@ -389,9 +389,9 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
 
 
 
-Wouters, et al.           Expires July 14, 2016                 [Page 7]
+Wouters, et al.          Expires August 25, 2016                [Page 7]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option     February 2016
 
 
    then uses a connection close signal (in a similar manner to HTTP 1.1
@@ -445,9 +445,9 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
 
 
 
-Wouters, et al.           Expires July 14, 2016                 [Page 8]
+Wouters, et al.          Expires August 25, 2016                [Page 8]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option     February 2016
 
 
 5.  Security Considerations
@@ -490,7 +490,7 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
               Dickinson, J., Dickinson, S., Bellis, R., Mankin, A., and
               D. Wessels, "DNS Transport over TCP - Implementation
               Requirements", draft-ietf-dnsop-5966bis (work in
-              progress), December 2015.
+              progress), January 2016.
 
    [RFC1035]  Mockapetris, P., "Domain names - implementation and
               specification", STD 13, RFC 1035, DOI 10.17487/RFC1035,
@@ -501,9 +501,9 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
 
 
 
-Wouters, et al.           Expires July 14, 2016                 [Page 9]
+Wouters, et al.          Expires August 25, 2016                [Page 9]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option     February 2016
 
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
@@ -533,13 +533,13 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
 
    [CHAIN-QUERY]
               Wouters, P., "Chain Query requests in DNS", draft-ietf-
-              dnsop-edns-chain-query (work in progress), November 2015.
+              dnsop-edns-chain-query (work in progress), January 2016.
 
    [DNS-over-TLS]
               Hu, Z., Zhu, L., Heidemann, J., Mankin, A., Wessels, D.,
               and P. Hoffman, "TLS for DNS: Initiation and Performance
               Considerations", draft-ietf-dprive-dns-over-tls (work in
-              progress), December 2015.
+              progress), January 2016.
 
    [fragmentation-considered-poisonous]
               Herzberg, A. and H. Shulman, "Fragmentation Considered
@@ -557,9 +557,9 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
 
 
 
-Wouters, et al.           Expires July 14, 2016                [Page 10]
+Wouters, et al.          Expires August 25, 2016               [Page 10]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option     February 2016
 
 
 Appendix A.  Editors' Notes
@@ -569,7 +569,7 @@ A.1.  Abridged Change History
    [Note to RFC Editor: please remove this section prior to
    publication.]
 
-A.1.1.  draft-ietf-dnsop-edns-tcp-keepalive-05
+A.1.1.  draft-ietf-dnsop-edns-tcp-keepalive-06
 
    Introduction: Moved paragraph 8 to paragraph 2 for readability.
 
@@ -613,9 +613,9 @@ A.1.2.  draft-ietf-dnsop-edns-tcp-keepalive-05
 
 
 
-Wouters, et al.           Expires July 14, 2016                [Page 11]
+Wouters, et al.          Expires August 25, 2016               [Page 11]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option     February 2016
 
 
    Reworded first paragraph of Introduction discussing TCP vs (UDP +
@@ -669,9 +669,9 @@ A.1.5.  draft-ietf-dnsop-edns-tcp-keepalive-02
 
 
 
-Wouters, et al.           Expires July 14, 2016                [Page 12]
+Wouters, et al.          Expires August 25, 2016               [Page 12]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option     February 2016
 
 
    Changed semantics so the client no longer sends a timeout.  The
@@ -725,9 +725,9 @@ Authors' Addresses
 
 
 
-Wouters, et al.           Expires July 14, 2016                [Page 13]
+Wouters, et al.          Expires August 25, 2016               [Page 13]
 
-Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
+Internet-Draft     The edns-tcp-keepalive EDNS0 Option     February 2016
 
 
    Joe Abley
@@ -781,4 +781,4 @@ Internet-Draft     The edns-tcp-keepalive EDNS0 Option      January 2016
 
 
 
-Wouters, et al.           Expires July 14, 2016                [Page 14]
+Wouters, et al.          Expires August 25, 2016               [Page 14]

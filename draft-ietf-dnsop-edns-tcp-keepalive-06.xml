@@ -83,7 +83,7 @@
         <uri>http://www.isc.org</uri>
     </address>
     </author>
-    <date month="January" year="2016" />
+    <date month="February" year="2016" />
     <area>ops</area>
     <workgroup>dnsop</workgroup>
 
@@ -473,11 +473,11 @@
          <author initials='D' surname='Wessels' fullname='D. Wessels'> 
              <organization>Verisign Labs</organization>
          </author>
-         <date month='December' day='17' year='2015' /> 
+         <date month='January' day='15' year='2016' /> 
          </front> 
          <seriesInfo name='Internet-Draft' value='draft-ietf-dnsop-5966bis' /> 
          <format type='TXT' 
-               target='https://tools.ietf.org/html/draft-ietf-dnsop-5966bis-05' /> 
+               target='https://tools.ietf.org/html/draft-ietf-dnsop-5966bis-06' /> 
       </reference>
     </references>
 
@@ -513,7 +513,7 @@
          <author initials='P' surname='Wouters' fullname='P. Wouters'> 
          <organization>Red Hat</organization>
          </author> 
-         <date month='November' day='117' year='2015' /> 
+         <date month='January' day='18' year='2016' /> 
          <abstract><t>
          This document defines an EDNS0 extension that can be used by a DNSSEC
          enabled Recursive Nameserver configured as a forwarder to send a
@@ -524,7 +524,7 @@
          </front> 
          <seriesInfo name='Internet-Draft' value='draft-ietf-dnsop-edns-chain-query' /> 
          <format type='TXT' 
-               target='http://www.ietf.org/internet-drafts/draft-ietf-dnsop-edns-chain-query-05.txt' />
+               target='http://www.ietf.org/internet-drafts/draft-ietf-dnsop-edns-chain-query-06.txt' />
       </reference>
 
       <reference anchor='DNS-over-TLS'> 
@@ -548,11 +548,11 @@
          <author initials='P' surname='Hoffman' fullname='P. Hoffman'> 
             <organization>VPN Consortium</organization>
          </author>
-         <date month='December' day='7' year='2015' /> 
+         <date month='January' day='22' year='2016' /> 
          </front> 
          <seriesInfo name='Internet-Draft' value='draft-ietf-dprive-dns-over-tls' /> 
          <format type='TXT' 
-               target='https://tools.ietf.org/html/draft-ietf-dprive-dns-over-tls-02' /> 
+               target='https://tools.ietf.org/html/draft-ietf-dprive-dns-over-tls-05' /> 
       </reference>
         <reference anchor='fragmentation-considered-poisonous'
          target='http://arxiv.org/abs/1205.4011'> 
@@ -571,7 +571,7 @@
     <section title="Editors' Notes">
       <section title="Abridged Change History">
           <t>[Note to RFC Editor: please remove this section prior to publication.]</t>
-          <section title="draft-ietf-dnsop-edns-tcp-keepalive-05">
+          <section title="draft-ietf-dnsop-edns-tcp-keepalive-06">
               <t>Introduction: Moved paragraph 8 to paragraph 2 for readability.</t>
               <t>Introduction: clarified that TCP has expensive setup overhead compared to UDP.</t>
               <t>Section 3: Add explicit description of the idle timeout.</t>
